@@ -30,4 +30,16 @@ public class PuzzleBox:MonoBehaviour
   {
     BoxSprite.color = _color;
   }
+
+  private void OnMouseUp()
+  {
+    int clickResult = PuzzleGameplay.instance.CheckPuzzle(BoxPosition);
+    if (clickResult == 0)
+    {
+      BoxSprite.sprite = Wrong;
+    } else
+    {
+      SetColor(Color.black);
+    }
+  }
 }
