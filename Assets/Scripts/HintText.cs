@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class RowText : MonoBehaviour
+public class HintText : MonoBehaviour
 {
   public void SetText(string _text)
   {

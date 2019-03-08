@@ -6,11 +6,12 @@ public class PuzzleBox:MonoBehaviour
 {
   public Sprite Empty, Wrong, Marked;
   private SpriteRenderer BoxSprite;
+  public bool isMarked { get; private set; }
   public Vector2Int BoxPosition { get; private set; }
 
   private void Awake()
   {
-    BoxSprite = GetComponent<SpriteRenderer>();
+    BoxSprite = GetComponent<SpriteRenderer>();    
   }
 
   public void SetPosition(Vector2Int _boxPosition)
@@ -18,28 +19,41 @@ public class PuzzleBox:MonoBehaviour
     BoxPosition = _boxPosition;
   }
 
-  public void SetState(int _state)
-  {
-    if (_state == 1)
-    {
-      BoxSprite.sprite = Marked;
-    }
-  }
-
   public void SetColor(Color _color)
   {
     BoxSprite.color = _color;
   }
 
-  private void OnMouseUp()
+  public void SetComplete()
   {
-    int clickResult = PuzzleGameplay.instance.CheckPuzzle(BoxPosition);
-    if (clickResult == 0)
+    BoxSprite.sprite = Marked;
+    GetComponent<Collider2D>().enabled = false;
+  }
+
+  private void OnMouseOver()
+  {
+    if (Input.GetMouseButtonDown(0))
     {
-      BoxSprite.sprite = Wrong;
-    } else
+      int clickResult = PuzzleGameplay.instance.CheckPuzzle(BoxPosition);
+      if (clickResult == 0)
+      {
+        BoxSprite.sprite = Wrong;
+      } else
+      {
+        SetColor(Color.black);
+      }
+      GetComponent<Collider2D>().enabled = false;
+    }
+    if (Input.GetMouseButtonDown(1))
     {
-      SetColor(Color.black);
+      isMarked = !isMarked;
+      if (isMarked)
+      {
+        BoxSprite.sprite = Marked;
+      } else
+      {
+        BoxSprite.sprite = Empty;
+      }
     }
   }
 }
