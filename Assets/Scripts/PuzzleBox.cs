@@ -26,7 +26,10 @@ public class PuzzleBox:MonoBehaviour
 
   public void SetComplete()
   {
-    BoxSprite.sprite = Marked;
+    if (BoxSprite.sprite != Wrong)
+    {
+      BoxSprite.sprite = Marked;
+    }
     GetComponent<Collider2D>().enabled = false;
   }
 

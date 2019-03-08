@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.IO;
 
 public class PuzzleGameplay : MonoBehaviour
 {
@@ -9,13 +10,13 @@ public class PuzzleGameplay : MonoBehaviour
   public GameObject PuzzleBucket { get; private set; }
   public GameObject TextBucket { get; private set; }
   private int Hearts;
-  private int[][] PuzzleGrid = {
+  private int[][] PuzzleGrid/* = {
     new int[] {1,0,1,0,1},
     new int[] {0,0,1,1,0},
     new int[] {0,1,1,0,0},
     new int[] {1,0,1,1,0},
-    new int[] {1,1,1,0,1}
-  };
+    new int[] {1,1,1,0,1},
+  }*/;
   private PuzzleBox[,] PuzzleBoxes;
   public HintText HintRowText;
   public HintText HintColText;
@@ -37,32 +38,51 @@ public class PuzzleGameplay : MonoBehaviour
     TextBucket = new GameObject("TextBucket");
     TextBucket.transform.parent = transform;
 
+    CreatePuzzleGrid();
+
     RowTexts = new HintText[PuzzleGrid.Length];
     ColTexts = new HintText[PuzzleGrid[0].Length];
     PuzzleBoxes = new PuzzleBox[PuzzleGrid.Length,PuzzleGrid[0].Length];
     
-    for (int y=PuzzleGrid.Length-1; y>=0; y--)
+    for (int y=0; y<PuzzleGrid.Length; y++)
     {
       for (int x=0; x<PuzzleGrid[y].Length; x++)
       {
         PuzzleBox tempBox = Instantiate(PuzzleBox, PuzzleBucket.transform);
-        tempBox.transform.localPosition = new Vector3(x, y, 0);
+        tempBox.transform.localPosition = new Vector3(x, -y, 0);
         tempBox.SetPosition(new Vector2Int(x, y));
         PuzzleBoxes[y, x] = tempBox;
       }
       HintText tempRowText = Instantiate(HintRowText, TextBucket.transform);
-      tempRowText.transform.localPosition = new Vector3(-0.5f, y, 0);
+      tempRowText.transform.localPosition = new Vector3(-0.5f, -y, 0);
       RowTexts[y] = tempRowText;
       UpdateRowText(y);
     }
     for (int x = 0; x < PuzzleGrid[0].Length; x++)
     {
       HintText tempColText = Instantiate(HintColText, TextBucket.transform);
-      tempColText.transform.localPosition = new Vector3(x, PuzzleGrid.Length - 1f, 0);
+      tempColText.transform.localPosition = new Vector3(x, 0, 0);
       ColTexts[x] = tempColText;
       UpdateColText(x);
     }
-    transform.position = new Vector3(-3, -3, 0);
+    transform.position = new Vector3(-3, 2, 0);
+  }
+
+  private void CreatePuzzleGrid()
+  {
+    StreamReader Reader = new StreamReader("Resources/PuzzleTest.txt");
+    string LineText = Reader.ReadToEnd();
+    Reader.Close();
+    string[] LineInfo = LineText.Split('\n');
+    PuzzleGrid = new int[LineInfo.Length][];
+    for (int i=0; i<LineInfo.Length-1; i++)
+    {
+      PuzzleGrid[i] = new int[LineInfo[i].Length-1];
+      for (int j=0; j<LineInfo[i].Length-1; j++)
+      {
+        PuzzleGrid[i][j] = int.Parse(LineInfo[i][j].ToString());
+      }
+    }
   }
 
   public int CheckPuzzle(Vector2Int _checkPos)
@@ -71,6 +91,7 @@ public class PuzzleGameplay : MonoBehaviour
     if (result == 1)
     {
       PuzzleGrid[_checkPos.y][_checkPos.x] = 2;
+      CheckWin();
     }
     if (result == 0 && Hearts > 0)
     {
@@ -83,6 +104,25 @@ public class PuzzleGameplay : MonoBehaviour
     UpdateRowText(_checkPos.y);
     UpdateColText(_checkPos.x);
     return (result);
+  }
+
+  private void CheckWin()
+  {
+    bool isWon = true;
+    for (int y=0; y<PuzzleGrid.Length; y++)
+    {
+      for (int x=0; x<PuzzleGrid[0].Length; x++)
+      {
+        if (PuzzleGrid[y][x] == 1)
+        {
+          isWon = false;
+        }
+      }
+    }
+    if (isWon)
+    {
+      Debug.LogWarning("WON GAME!");
+    }
   }
 
   private void UpdateRowText(int _rowNum)
@@ -159,7 +199,7 @@ public class PuzzleGameplay : MonoBehaviour
     int rowCount = 0;
     bool continuous = false;
     bool completed = true;
-    for (int y = _col.Length-1; y >= 0; y--)
+    for (int y = 0; y<_col.Length; y++)
     {
       if (_col[y] == 0)
       {
@@ -204,7 +244,7 @@ public class PuzzleGameplay : MonoBehaviour
 
     if (completed)
     {
-      for (int y = 0; y < PuzzleGrid[0].Length; y++)
+      for (int y = 0; y < PuzzleGrid.Length; y++)
       {
         if (_col[y] == 0)
         {
