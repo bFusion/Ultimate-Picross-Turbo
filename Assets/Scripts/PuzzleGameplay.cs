@@ -10,18 +10,24 @@ public class PuzzleGameplay : MonoBehaviour
   public GameObject PuzzleBucket { get; private set; }
   public GameObject TextBucket { get; private set; }
   private int Hearts;
-  private int[][] PuzzleGrid/* = {
-    new int[] {1,0,1,0,1},
-    new int[] {0,0,1,1,0},
-    new int[] {0,1,1,0,0},
-    new int[] {1,0,1,1,0},
-    new int[] {1,1,1,0,1},
-  }*/;
+  private int[][] PuzzleGrid = {
+    new int[] {0,0,1,0,1,0,0,0,0,0},
+    new int[] {0,1,1,0,1,1,0,0,0,0},
+    new int[] {0,1,1,1,1,1,0,0,0,0},
+    new int[] {1,1,0,1,0,1,1,0,0,1},
+    new int[] {0,1,1,1,1,1,0,0,1,1},
+    new int[] {0,0,1,1,1,0,0,0,1,0},
+    new int[] {1,1,1,1,1,1,0,0,1,1},
+    new int[] {1,0,1,1,1,1,1,0,0,1},
+    new int[] {0,0,1,1,1,1,1,1,1,1},
+    new int[] {0,1,1,0,1,1,1,1,0,0}
+  };
+  public Texture2D puzzleImage;
   private PuzzleBox[,] PuzzleBoxes;
   public HintText HintRowText;
   public HintText HintColText;
-  public HintText[] RowTexts;
-  public HintText[] ColTexts;
+  private HintText[] RowTexts;
+  private HintText[] ColTexts;
 
   private void Awake()
   {
@@ -38,11 +44,11 @@ public class PuzzleGameplay : MonoBehaviour
     TextBucket = new GameObject("TextBucket");
     TextBucket.transform.parent = transform;
 
-    CreatePuzzleGrid();
-
     RowTexts = new HintText[PuzzleGrid.Length];
     ColTexts = new HintText[PuzzleGrid[0].Length];
     PuzzleBoxes = new PuzzleBox[PuzzleGrid.Length,PuzzleGrid[0].Length];
+
+    SetPuzzleFromImage();
     
     for (int y=0; y<PuzzleGrid.Length; y++)
     {
@@ -68,19 +74,21 @@ public class PuzzleGameplay : MonoBehaviour
     transform.position = new Vector3(-3, 2, 0);
   }
 
-  private void CreatePuzzleGrid()
+  private void SetPuzzleFromImage()
   {
-    StreamReader Reader = new StreamReader("Resources/PuzzleTest.txt");
-    string LineText = Reader.ReadToEnd();
-    Reader.Close();
-    string[] LineInfo = LineText.Split('\n');
-    PuzzleGrid = new int[LineInfo.Length][];
-    for (int i=0; i<LineInfo.Length-1; i++)
+    PuzzleGrid = new int[puzzleImage.height][];
+    for (int y = 0; y < puzzleImage.height; y++)
     {
-      PuzzleGrid[i] = new int[LineInfo[i].Length-1];
-      for (int j=0; j<LineInfo[i].Length-1; j++)
+      PuzzleGrid[y] = new int[puzzleImage.width];
+      for (int x = 0; x < puzzleImage.width; x++)
       {
-        PuzzleGrid[i][j] = int.Parse(LineInfo[i][j].ToString());
+        if (puzzleImage.GetPixel(x,puzzleImage.height-y-1) == Color.clear)
+        {
+          PuzzleGrid[y][x] = 0;
+        } else
+        {
+          PuzzleGrid[y][x] = 1;
+        }
       }
     }
   }

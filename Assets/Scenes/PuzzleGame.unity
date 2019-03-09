@@ -143,12 +143,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   PuzzleBox: {fileID: 3232297999820344878, guid: ff9fd66300b5fd04ea81fe8fd9ae46dc,
     type: 3}
+  puzzleImage: {fileID: 2800000, guid: a40e5fd7a38bfb849a0f80f642ed9833, type: 3}
   HintRowText: {fileID: 7879819139435329146, guid: 4220d74da92e2de42813797f88d0d216,
     type: 3}
   HintColText: {fileID: 7879819139435329146, guid: 9267e31befb2e784f8d325b23c233fec,
     type: 3}
-  RowTexts: []
-  ColTexts: []
 --- !u!4 &519420032
 Transform:
   m_ObjectHideFlags: 0
@@ -229,7 +228,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 7.72
+  orthographic size: 9.5
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
