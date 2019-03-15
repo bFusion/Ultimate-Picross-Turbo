@@ -10,18 +10,8 @@ public class PuzzleGameplay : MonoBehaviour
   public GameObject PuzzleBucket { get; private set; }
   public GameObject TextBucket { get; private set; }
   private int Hearts;
-  private int[][] PuzzleGrid = {
-    new int[] {0,0,1,0,1,0,0,0,0,0},
-    new int[] {0,1,1,0,1,1,0,0,0,0},
-    new int[] {0,1,1,1,1,1,0,0,0,0},
-    new int[] {1,1,0,1,0,1,1,0,0,1},
-    new int[] {0,1,1,1,1,1,0,0,1,1},
-    new int[] {0,0,1,1,1,0,0,0,1,0},
-    new int[] {1,1,1,1,1,1,0,0,1,1},
-    new int[] {1,0,1,1,1,1,1,0,0,1},
-    new int[] {0,0,1,1,1,1,1,1,1,1},
-    new int[] {0,1,1,0,1,1,1,1,0,0}
-  };
+  private int[][] PuzzleGrid;
+  private Color[][] ColorGrid;
   public Texture2D puzzleImage;
   private PuzzleBox[,] PuzzleBoxes;
   public HintText HintRowText;
@@ -44,11 +34,11 @@ public class PuzzleGameplay : MonoBehaviour
     TextBucket = new GameObject("TextBucket");
     TextBucket.transform.parent = transform;
 
+    SetPuzzleFromImage();
+
     RowTexts = new HintText[PuzzleGrid.Length];
     ColTexts = new HintText[PuzzleGrid[0].Length];
     PuzzleBoxes = new PuzzleBox[PuzzleGrid.Length,PuzzleGrid[0].Length];
-
-    SetPuzzleFromImage();
     
     for (int y=0; y<PuzzleGrid.Length; y++)
     {
@@ -77,12 +67,16 @@ public class PuzzleGameplay : MonoBehaviour
   private void SetPuzzleFromImage()
   {
     PuzzleGrid = new int[puzzleImage.height][];
+    ColorGrid = new Color[puzzleImage.height][];
     for (int y = 0; y < puzzleImage.height; y++)
     {
       PuzzleGrid[y] = new int[puzzleImage.width];
+      ColorGrid[y] = new Color[puzzleImage.width];
       for (int x = 0; x < puzzleImage.width; x++)
       {
-        if (puzzleImage.GetPixel(x,puzzleImage.height-y-1) == Color.clear)
+        Color PixelColor = puzzleImage.GetPixel(x, puzzleImage.height - y - 1);
+        ColorGrid[y][x] = PixelColor;
+        if (PixelColor.a == 0f)
         {
           PuzzleGrid[y][x] = 0;
         } else
@@ -112,6 +106,11 @@ public class PuzzleGameplay : MonoBehaviour
     UpdateRowText(_checkPos.y);
     UpdateColText(_checkPos.x);
     return (result);
+  }
+
+  public Color GetColor(Vector2Int _checkPos)
+  {
+    return ColorGrid[_checkPos.y][_checkPos.x];
   }
 
   private void CheckWin()

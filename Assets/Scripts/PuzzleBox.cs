@@ -43,7 +43,7 @@ public class PuzzleBox:MonoBehaviour
         BoxSprite.sprite = Wrong;
       } else
       {
-        SetColor(Color.black);
+        SetColor(PuzzleGameplay.instance.GetColor(BoxPosition));
       }
       GetComponent<Collider2D>().enabled = false;
     }
