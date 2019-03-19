@@ -61,7 +61,7 @@ public class PuzzleGameplay : MonoBehaviour
       ColTexts[x] = tempColText;
       UpdateColText(x);
     }
-    transform.position = new Vector3(-3, 2, 0);
+    transform.position = Vector3.zero;
   }
 
   private void SetPuzzleFromImage()
